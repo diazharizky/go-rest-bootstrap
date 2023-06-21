@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:11.10-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${PG_DATABASE_USER}
+      - POSTGRES_PASSWORD=${PG_DATABASE_PASSWORD}
+      - POSTGRES_DB=${PG_DATABASE_NAME}
+    ports:
+      - "5432:5432"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    restart: unless-stopped
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    environment:
+      - ES_JAVA_OPTS=-Xms512m -Xmx1024m
+      - discovery.type=single-node
+    healthcheck:
+      test: curl -IsfL http://elasticsearch:9200 > /dev/null 2>&1
