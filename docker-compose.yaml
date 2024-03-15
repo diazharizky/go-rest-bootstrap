@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:11
+    environment:
+      - POSTGRES_USER=rest
+      - POSTGRES_PASSWORD=rest
+      - POSTGRES_DB=rest
+    ports:
+      - 5432:5432
