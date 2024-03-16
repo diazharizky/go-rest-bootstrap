@@ -2,9 +2,17 @@ version: "3.8"
 services:
   db:
     image: postgres:11
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=rest
       - POSTGRES_PASSWORD=rest
       - POSTGRES_DB=rest
     ports:
       - 5432:5432
+
+  mailing:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - 8025:8025
+      - 1025:1025
