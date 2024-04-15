@@ -60,3 +60,15 @@ func UnauthorizedError() Response {
 		},
 	}
 }
+
+func CommonError(err error) Response {
+	return Response{
+		OK: false,
+		Errors: []ErrDetail{
+			{
+				Code:        ErrCodeUnknown,
+				Description: err.Error(),
+			},
+		},
+	}
+}

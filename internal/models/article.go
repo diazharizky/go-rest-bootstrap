@@ -3,8 +3,8 @@ package models
 import "time"
 
 type Article struct {
-	ID        int32      `json:"id"`
-	AuthorID  int32      `json:"author_id"`
+	ID        int64      `json:"id"`
+	AuthorID  int64      `json:"author_id"`
 	Title     string     `json:"title"`
 	Content   string     `json:"content"`
 	CreatedAt time.Time  `json:"created_at"`

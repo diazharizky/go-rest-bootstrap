@@ -6,4 +6,5 @@ const (
 	ErrCodeFatal errCode = 101 + iota
 	ErrCodeBadRequest
 	ErrCodeUnauthorized
+	ErrCodeUnknown
 )

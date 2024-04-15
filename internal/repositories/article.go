@@ -12,13 +12,12 @@ type articleRepository struct {
 	tableName string
 }
 
-func NewArticleRepository() articleRepository {
-	return articleRepository{
-		tableName: "articles",
-	}
+func NewArticleRepository() (r articleRepository) {
+	r.tableName = "articles"
+	return
 }
 
-func (r articleRepository) List(userID int32) ([]models.Article, error) {
+func (r articleRepository) List(userID int64) ([]models.Article, error) {
 	db := db.GetConnection()
 	defer db.Close()
 
@@ -45,7 +44,7 @@ func (r articleRepository) List(userID int32) ([]models.Article, error) {
 	return articles, nil
 }
 
-func (r articleRepository) Get(articleID int32) (*models.Article, error) {
+func (r articleRepository) Get(articleID int64) (*models.Article, error) {
 	db := db.GetConnection()
 	defer db.Close()
 

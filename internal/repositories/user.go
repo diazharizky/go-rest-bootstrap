@@ -12,10 +12,9 @@ type userRepository struct {
 	tableName string
 }
 
-func NewUserRepository() userRepository {
-	return userRepository{
-		tableName: "users",
-	}
+func NewUserRepository() (r userRepository) {
+	r.tableName = "users"
+	return
 }
 
 func (r userRepository) List() ([]models.User, error) {
@@ -45,7 +44,7 @@ func (r userRepository) List() ([]models.User, error) {
 	return users, nil
 }
 
-func (r userRepository) Get(userID int32) (*models.User, error) {
+func (r userRepository) Get(userID int64) (*models.User, error) {
 	db := db.GetConnection()
 	defer db.Close()
 
