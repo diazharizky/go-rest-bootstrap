@@ -1,41 +1,38 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 
 	"github.com/diazharizky/go-rest-bootstrap/config"
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func init() {
 	config.Global.SetDefault("db.host", "localhost")
 	config.Global.SetDefault("db.port", 5432)
-	config.Global.SetDefault("db.user", "rest")
-	config.Global.SetDefault("db.password", "rest")
-	config.Global.SetDefault("db.db_name", "rest")
+	config.Global.SetDefault("db.user", "gorestbs")
+	config.Global.SetDefault("db.password", "gorestbs")
+	config.Global.SetDefault("db.name", "gorestbs")
 }
 
-func GetConnection() *sql.DB {
+func MustGetConnection() *gorm.DB {
 	host := config.Global.GetString("db.host")
 	port := config.Global.GetInt("db.port")
 	user := config.Global.GetString("db.user")
 	password := config.Global.GetString("db.password")
-	dbName := config.Global.GetString("db.db_name")
+	dbName := config.Global.GetString("db.name")
 
 	dsn := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbName,
 	)
 
-	db, err := sql.Open("postgres", dsn)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
-	}
-
-	err = db.Ping()
-	if err != nil {
-		panic(err)
+		panic(
+			fmt.Sprintf("failed to connect database: %v", err),
+		)
 	}
 
 	return db
