@@ -1,8 +1,11 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/diazharizky/go-rest-bootstrap/internal/models"
 	"github.com/diazharizky/go-rest-bootstrap/pkg/db"
+	"gorm.io/gorm"
 )
 
 type userRepository struct {
@@ -30,6 +33,9 @@ func (r userRepository) Get(userID int64) (*models.User, error) {
 
 	user := models.User{}
 	if tx := conn.First(&user, userID); tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, tx.Error
 	}
 

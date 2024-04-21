@@ -10,5 +10,5 @@ type Article struct {
 	CreatedAt time.Time  `json:"created_at" gorm:"not null;default:now()"`
 	UpdatedAt time.Time  `json:"updated_at" gorm:"not null;default:now()"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	Author    User       `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Author    *User      `json:"author,omitempty" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }

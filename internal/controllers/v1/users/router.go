@@ -9,6 +9,7 @@ func NewRouter() (router *fiber.App) {
 
 	router = fiber.New()
 	router.Get("/", controller.List)
+	router.Post("/", controller.Create)
 
 	return
 }
