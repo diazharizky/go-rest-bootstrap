@@ -1,6 +1,7 @@
 package ctlarticles
 
 import (
+	"github.com/diazharizky/go-rest-bootstrap/internal/middlewares"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -9,7 +10,7 @@ func NewRouter() (router *fiber.App) {
 
 	router = fiber.New()
 	router.Get("/", controller.List)
-	router.Post("/", controller.Create)
+	router.Post("/", middlewares.JWTProtected, controller.Create)
 
 	return
 }
