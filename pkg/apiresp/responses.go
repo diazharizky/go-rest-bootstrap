@@ -1,10 +1,20 @@
 package apiresp
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
 
-type ErrDetail struct {
+	"github.com/go-playground/validator/v10"
+)
+
+type CommonError struct {
 	Code        errCode `json:"code"`
 	Description string  `json:"description"`
+}
+
+type InputError struct {
+	Field       string `json:"field"`
+	Description string `json:"description"`
 }
 
 type Pagination struct {
@@ -13,25 +23,31 @@ type Pagination struct {
 	TotalPages int32 `json:"totalPages"`
 }
 
-type Response struct {
+type Response[T any] struct {
 	OK         bool        `json:"ok"`
-	StatusCode int         `json:"statusCode"`
 	Data       any         `json:"data,omitempty"`
 	Pagination *Pagination `json:"pagination,omitempty"`
-	Errors     []ErrDetail `json:"errors,omitempty"`
+	Errors     []T         `json:"errors,omitempty"`
 }
 
-func Ok(data any) (int, Response) {
-	return http.StatusOK, Response{
+func Ok(data any) (int, Response[CommonError]) {
+	return http.StatusOK, Response[CommonError]{
 		OK:   true,
 		Data: data,
 	}
 }
 
-func FatalError() (int, Response) {
-	return http.StatusInternalServerError, Response{
+func Created(data any) (int, Response[CommonError]) {
+	return http.StatusCreated, Response[CommonError]{
+		OK:   true,
+		Data: data,
+	}
+}
+
+func FatalError() (int, Response[CommonError]) {
+	return http.StatusInternalServerError, Response[CommonError]{
 		OK: false,
-		Errors: []ErrDetail{
+		Errors: []CommonError{
 			{
 				Code:        ErrCodeFatal,
 				Description: "Internal server error",
@@ -40,10 +56,10 @@ func FatalError() (int, Response) {
 	}
 }
 
-func BadRequestError() (int, Response) {
-	return http.StatusBadRequest, Response{
+func BadRequestError() (int, Response[CommonError]) {
+	return http.StatusBadRequest, Response[CommonError]{
 		OK: false,
-		Errors: []ErrDetail{
+		Errors: []CommonError{
 			{
 				Code:        ErrCodeBadRequest,
 				Description: "Bad request",
@@ -52,10 +68,10 @@ func BadRequestError() (int, Response) {
 	}
 }
 
-func UnauthorizedError() (int, Response) {
-	return http.StatusUnauthorized, Response{
+func UnauthorizedError() (int, Response[CommonError]) {
+	return http.StatusUnauthorized, Response[CommonError]{
 		OK: false,
-		Errors: []ErrDetail{
+		Errors: []CommonError{
 			{
 				Code:        ErrCodeUnauthorized,
 				Description: "Unauthorized",
@@ -64,10 +80,10 @@ func UnauthorizedError() (int, Response) {
 	}
 }
 
-func NotAuthenticatedError() (int, Response) {
-	return http.StatusForbidden, Response{
+func NotAuthenticatedError() (int, Response[CommonError]) {
+	return http.StatusForbidden, Response[CommonError]{
 		OK: false,
-		Errors: []ErrDetail{
+		Errors: []CommonError{
 			{
 				Code:        ErrCodeNotAuthenticated,
 				Description: "Not Authenticated",
@@ -76,14 +92,43 @@ func NotAuthenticatedError() (int, Response) {
 	}
 }
 
-func CommonError(err error) (int, Response) {
-	return http.StatusInternalServerError, Response{
+func UnknownError(err error) (int, Response[CommonError]) {
+	return http.StatusInternalServerError, Response[CommonError]{
 		OK: false,
-		Errors: []ErrDetail{
+		Errors: []CommonError{
 			{
 				Code:        ErrCodeUnknown,
 				Description: err.Error(),
 			},
 		},
+	}
+}
+
+var inputErrorMessagesMap = map[string]string{
+	"required": "Field is required",
+	"email":    "Not a valid email",
+	"min":      "Value must contain at least %s characters",
+	"max":      "Value must be at most %s characters long",
+}
+
+func InputRequiredError(errors validator.ValidationErrors) (int, Response[InputError]) {
+	inputErrors := make([]InputError, len(errors))
+	for i, err := range errors {
+		errDescription, exists := inputErrorMessagesMap[err.Tag()]
+		if !exists {
+			errDescription = err.Error()
+		} else if err.Param() != "" {
+			errDescription = fmt.Sprintf(errDescription, err.Param())
+		}
+
+		inputErrors[i] = InputError{
+			Field:       err.Field(),
+			Description: errDescription,
+		}
+	}
+
+	return http.StatusBadRequest, Response[InputError]{
+		OK:     false,
+		Errors: inputErrors,
 	}
 }
