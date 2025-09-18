@@ -1,14 +1,13 @@
 package ctlarticles
 
 import (
-	"github.com/diazharizky/go-rest-bootstrap/internal/interfaces"
 	"github.com/diazharizky/go-rest-bootstrap/internal/repositories"
 	"github.com/diazharizky/go-rest-bootstrap/internal/services"
 )
 
 type Controller struct {
-	ArticleRepository    interfaces.ArticleRepository
-	CreateArticleService interfaces.CreateArticleService
+	ArticleRepository    repositories.ArticleRepository
+	CreateArticleService services.CreateArticleService
 }
 
 func NewDefault() (ctl Controller) {

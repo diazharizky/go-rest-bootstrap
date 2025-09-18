@@ -3,14 +3,13 @@ package services
 import (
 	"errors"
 
-	"github.com/diazharizky/go-rest-bootstrap/internal/interfaces"
 	"github.com/diazharizky/go-rest-bootstrap/internal/models"
 	"github.com/diazharizky/go-rest-bootstrap/internal/repositories"
 )
 
 type createArticleService struct {
-	UserRepository    interfaces.UserRepository
-	ArticleRepository interfaces.ArticleRepository
+	UserRepository    repositories.UserRepository
+	ArticleRepository repositories.ArticleRepository
 }
 
 func NewCreateArticleService() (m createArticleService) {

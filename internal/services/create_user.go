@@ -3,14 +3,13 @@ package services
 import (
 	"fmt"
 
-	"github.com/diazharizky/go-rest-bootstrap/internal/interfaces"
 	"github.com/diazharizky/go-rest-bootstrap/internal/models"
 	"github.com/diazharizky/go-rest-bootstrap/internal/repositories"
 	"github.com/diazharizky/go-rest-bootstrap/pkg/emailclient"
 )
 
 type createUserService struct {
-	UserRepository interfaces.UserRepository
+	UserRepository repositories.UserRepository
 }
 
 func NewCreateUserService() (m createUserService) {
