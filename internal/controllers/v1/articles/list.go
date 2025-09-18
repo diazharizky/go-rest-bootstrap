@@ -13,7 +13,7 @@ func (ctl Controller) List(fcx *fiber.Ctx) error {
 
 	users, err := ctl.ArticleRepository.List(int64(userIDInt))
 	if err != nil {
-		statusCode, resp := apiresp.CommonError(err)
+		statusCode, resp := apiresp.UnknownError(err)
 		return fcx.Status(statusCode).JSON(resp)
 	}
 

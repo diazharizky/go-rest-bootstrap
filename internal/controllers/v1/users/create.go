@@ -9,12 +9,12 @@ import (
 func (ctl Controller) Create(fcx *fiber.Ctx) error {
 	newUser := new(models.User)
 	if err := fcx.BodyParser(newUser); err != nil {
-		statusCode, resp := apiresp.CommonError(err)
+		statusCode, resp := apiresp.UnknownError(err)
 		return fcx.Status(statusCode).JSON(resp)
 	}
 
 	if err := ctl.UserRepository.Create(newUser); err != nil {
-		statusCode, resp := apiresp.CommonError(err)
+		statusCode, resp := apiresp.UnknownError(err)
 		return fcx.Status(statusCode).JSON(resp)
 	}
 

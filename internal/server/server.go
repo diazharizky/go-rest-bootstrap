@@ -40,7 +40,7 @@ func New() (svr server) {
 		Max:        config.Global.GetInt("app.throttling.max.requests"),
 		Expiration: config.Global.GetDuration("app.throttling.expiration") * time.Second,
 		LimitReached: func(fcx *fiber.Ctx) error {
-			statusCode, resp := apiresp.CommonError(errors.New("too many requests"))
+			statusCode, resp := apiresp.UnknownError(errors.New("too many requests"))
 			return fcx.
 				Status(statusCode).
 				JSON(resp)
