@@ -21,24 +21,24 @@ type client struct {
 func init() {
 	config.Global.SetDefault("emailclient.host", "localhost")
 	config.Global.SetDefault("emailclient.port", 1025)
-	config.Global.SetDefault("emailclient.sender_name", "rest")
-	config.Global.SetDefault("emailclient.email", "rest")
+	config.Global.SetDefault("emailclient.sender_name", "gorest")
+	config.Global.SetDefault("emailclient.email", "gorest")
 	config.Global.SetDefault("emailclient.password", "")
 }
 
-func New() (c client) {
-	c.host = config.Global.GetString("emailclient.host")
-	c.port = config.Global.GetInt32("emailclient.port")
-	c.senderName = config.Global.GetString("emailclient.sender_name")
-	c.email = config.Global.GetString("emailclient.email")
-	c.password = config.Global.GetString("emailclient.password")
-	c.smtpAddr = fmt.Sprintf("%s:%d", c.host, c.port)
+func New() (cli client) {
+	cli.host = config.Global.GetString("emailclient.host")
+	cli.port = config.Global.GetInt32("emailclient.port")
+	cli.senderName = config.Global.GetString("emailclient.sender_name")
+	cli.email = config.Global.GetString("emailclient.email")
+	cli.password = config.Global.GetString("emailclient.password")
+	cli.smtpAddr = fmt.Sprintf("%s:%d", cli.host, cli.port)
 
 	return
 }
 
-func (c client) generateBody(to []string, cc []string, subject, message string) string {
-	body := "From: " + c.senderName + "\n" +
+func (cli client) generateBody(to []string, cc []string, subject, message string) string {
+	body := "From: " + cli.senderName + "\n" +
 		"To: " + strings.Join(to, ",") + "\n" +
 		"Cc: " + strings.Join(cc, ",") + "\n" +
 		"Subject: " + subject + "\n\n" +
@@ -47,26 +47,27 @@ func (c client) generateBody(to []string, cc []string, subject, message string) 
 	return body
 }
 
-func (c client) Send(to []string, cc []string, subject, message string) error {
-	auth := smtp.PlainAuth("", c.email, c.password, c.host)
-	body := c.generateBody(to, cc, subject, message)
+func (cli client) Send(to []string, cc []string, subject, message string) error {
+	auth := smtp.PlainAuth("", cli.email, cli.password, cli.host)
+	body := cli.generateBody(to, cc, subject, message)
 
 	return smtp.SendMail(
-		c.smtpAddr, auth, c.email, append(to, cc...), []byte(body),
+		cli.smtpAddr, auth, cli.email, append(to, cc...), []byte(body),
 	)
 }
 
-func (c client) SendNoAuth(to []string, cc []string, subject, message string) error {
-	cl, err := smtp.Dial(c.smtpAddr)
+func (cli client) SendNoAuth(to []string, cc []string, subject, message string) error {
+	cl, err := smtp.Dial(cli.smtpAddr)
 	if cl != nil {
 		defer cl.Quit()
 	}
+
 	if err != nil {
 		return err
 	}
 	defer cl.Close()
 
-	if err = cl.Mail(c.senderName); err != nil {
+	if err = cl.Mail(cli.senderName); err != nil {
 		return err
 	}
 
@@ -81,7 +82,7 @@ func (c client) SendNoAuth(to []string, cc []string, subject, message string) er
 		return err
 	}
 
-	body := c.generateBody(to, cc, subject, message)
+	body := cli.generateBody(to, cc, subject, message)
 	if _, err = w.Write([]byte(body)); err != nil {
 		return err
 	}
