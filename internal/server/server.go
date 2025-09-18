@@ -16,7 +16,7 @@ import (
 )
 
 type server struct {
-	engine *fiber.App
+	app *fiber.App
 }
 
 func init() {
@@ -33,13 +33,20 @@ func New() (svr server) {
 
 	app.Use(cors.New())
 	app.Use(limiter.New(limiter.Config{
+		// This rate limiter might not be working
+		// when the app is running in multiple nodes.
+		// Probably we need to utilise in-memory database
+		// to store the metrics.
+
 		Max:        config.Global.GetInt("app.throttling.max.requests"),
 		Expiration: config.Global.GetDuration("app.throttling.expiration") * time.Second,
 		LimitReached: func(fcx *fiber.Ctx) error {
 			resp := apiresp.CommonError(
 				errors.New("too many requests"),
 			)
-			return fcx.Status(http.StatusTooManyRequests).JSON(resp)
+			return fcx.
+				Status(http.StatusTooManyRequests).
+				JSON(resp)
 		},
 	}))
 
@@ -49,11 +56,11 @@ func New() (svr server) {
 			JSON(apiresp.Success(nil))
 	})
 
-	apiPath := app.Group("/api")
-	apiPath.Mount("/v1", ctlv1.NewRouter())
-	apiPath.Mount("/v2", ctlv2.NewRouter())
+	apiBasePath := app.Group("/api")
+	apiBasePath.Mount("/v1", ctlv1.NewRouter())
+	apiBasePath.Mount("/v2", ctlv2.NewRouter())
 
-	svr.engine = app
+	svr.app = app
 
 	return
 }
@@ -64,5 +71,5 @@ func (svr server) Start() {
 		config.Global.GetInt("app.port"),
 	)
 
-	svr.engine.Listen(addr)
+	svr.app.Listen(addr)
 }
