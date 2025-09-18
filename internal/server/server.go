@@ -3,7 +3,6 @@ package server
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/diazharizky/go-rest-bootstrap/config"
@@ -41,19 +40,16 @@ func New() (svr server) {
 		Max:        config.Global.GetInt("app.throttling.max.requests"),
 		Expiration: config.Global.GetDuration("app.throttling.expiration") * time.Second,
 		LimitReached: func(fcx *fiber.Ctx) error {
-			resp := apiresp.CommonError(
-				errors.New("too many requests"),
-			)
+			statusCode, resp := apiresp.CommonError(errors.New("too many requests"))
 			return fcx.
-				Status(http.StatusTooManyRequests).
+				Status(statusCode).
 				JSON(resp)
 		},
 	}))
 
 	app.Get("/healthcheck", func(fcx *fiber.Ctx) error {
-		return fcx.
-			Status(http.StatusOK).
-			JSON(apiresp.Success(nil))
+		statusCode, resp := apiresp.Ok(nil)
+		return fcx.Status(statusCode).JSON(resp)
 	})
 
 	apiBasePath := app.Group("/api")

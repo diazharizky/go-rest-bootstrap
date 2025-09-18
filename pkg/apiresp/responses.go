@@ -21,18 +21,16 @@ type Response struct {
 	Errors     []ErrDetail `json:"errors,omitempty"`
 }
 
-func Success(data any) Response {
-	return Response{
-		OK:         true,
-		StatusCode: http.StatusOK,
-		Data:       data,
+func Ok(data any) (int, Response) {
+	return http.StatusOK, Response{
+		OK:   true,
+		Data: data,
 	}
 }
 
-func FatalError() Response {
-	return Response{
-		OK:         false,
-		StatusCode: http.StatusInternalServerError,
+func FatalError() (int, Response) {
+	return http.StatusInternalServerError, Response{
+		OK: false,
 		Errors: []ErrDetail{
 			{
 				Code:        ErrCodeFatal,
@@ -42,10 +40,9 @@ func FatalError() Response {
 	}
 }
 
-func BadRequestError() Response {
-	return Response{
-		OK:         false,
-		StatusCode: http.StatusBadRequest,
+func BadRequestError() (int, Response) {
+	return http.StatusBadRequest, Response{
+		OK: false,
 		Errors: []ErrDetail{
 			{
 				Code:        ErrCodeBadRequest,
@@ -55,10 +52,9 @@ func BadRequestError() Response {
 	}
 }
 
-func UnauthorizedError() Response {
-	return Response{
-		OK:         false,
-		StatusCode: http.StatusUnauthorized,
+func UnauthorizedError() (int, Response) {
+	return http.StatusUnauthorized, Response{
+		OK: false,
 		Errors: []ErrDetail{
 			{
 				Code:        ErrCodeUnauthorized,
@@ -68,10 +64,9 @@ func UnauthorizedError() Response {
 	}
 }
 
-func NotAuthenticatedError() Response {
-	return Response{
-		OK:         false,
-		StatusCode: http.StatusForbidden,
+func NotAuthenticatedError() (int, Response) {
+	return http.StatusForbidden, Response{
+		OK: false,
 		Errors: []ErrDetail{
 			{
 				Code:        ErrCodeNotAuthenticated,
@@ -81,10 +76,9 @@ func NotAuthenticatedError() Response {
 	}
 }
 
-func CommonError(err error) Response {
-	return Response{
-		OK:         false,
-		StatusCode: http.StatusInternalServerError,
+func CommonError(err error) (int, Response) {
+	return http.StatusInternalServerError, Response{
+		OK: false,
 		Errors: []ErrDetail{
 			{
 				Code:        ErrCodeUnknown,
