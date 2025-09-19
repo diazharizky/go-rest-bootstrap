@@ -9,8 +9,8 @@ func NewRouter() (router *fiber.App) {
 	controller := NewDefault()
 
 	router = fiber.New()
-	router.Get("/", controller.List)
-	router.Post("/", middlewares.JWTProtected, controller.Create)
+	router.Get("/", controller.ListHandler)
+	router.Post("/", middlewares.JWTProtected, controller.CreateHandler)
 
 	return
 }

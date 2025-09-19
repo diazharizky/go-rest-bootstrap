@@ -1,4 +1,4 @@
-package ctlusers
+package ctlarticles
 
 import (
 	"github.com/diazharizky/go-rest-bootstrap/internal/models"
@@ -6,18 +6,18 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (ctl Controller) Create(fcx *fiber.Ctx) error {
-	newUser := new(models.User)
-	if err := fcx.BodyParser(newUser); err != nil {
+func (ctl Controller) CreateHandler(fcx *fiber.Ctx) error {
+	newArticle := new(models.Article)
+	if err := fcx.BodyParser(newArticle); err != nil {
 		statusCode, resp := apiresp.UnknownError(err)
 		return fcx.Status(statusCode).JSON(resp)
 	}
 
-	if err := ctl.UserRepository.Create(newUser); err != nil {
+	if err := ctl.CreateArticleService.Execute(newArticle); err != nil {
 		statusCode, resp := apiresp.UnknownError(err)
 		return fcx.Status(statusCode).JSON(resp)
 	}
 
-	statusCode, resp := apiresp.Ok(newUser)
+	statusCode, resp := apiresp.Ok(newArticle)
 	return fcx.Status(statusCode).JSON(resp)
 }

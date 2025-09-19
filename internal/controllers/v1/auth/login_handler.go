@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (ctl Controller) Login(fcx *fiber.Ctx) error {
+func (ctl Controller) LoginHandler(fcx *fiber.Ctx) error {
 	statusCode, resp := apiresp.Ok(nil)
 	return fcx.Status(statusCode).JSON(resp)
 }

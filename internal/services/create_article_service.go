@@ -18,7 +18,7 @@ func NewCreateArticleService() (m createArticleService) {
 	return
 }
 
-func (m createArticleService) Call(newArticle *models.Article) error {
+func (m createArticleService) Execute(newArticle *models.Article) error {
 	user, err := m.UserRepository.Get(newArticle.AuthorID)
 	if err != nil {
 		return err

@@ -14,7 +14,7 @@ type registerReqBody struct {
 	Password string `json:"password" validate:"required,min=8"`
 }
 
-func (ctl Controller) Register(fcx *fiber.Ctx) error {
+func (ctl Controller) RegisterHandler(fcx *fiber.Ctx) error {
 	var reqBody registerReqBody
 	if err := fcx.BodyParser(&reqBody); err != nil {
 		statusCode, resp := apiresp.FatalError()

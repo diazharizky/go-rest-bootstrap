@@ -8,8 +8,8 @@ func NewRouter() (router *fiber.App) {
 	controller := NewDefault()
 
 	router = fiber.New()
-	router.Get("/", controller.List)
-	router.Post("/", controller.Create)
+	router.Get("/", controller.ListHandler)
+	router.Post("/", controller.CreateHandler)
 
 	return
 }
