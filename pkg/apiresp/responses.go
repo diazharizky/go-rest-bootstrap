@@ -1,10 +1,7 @@
 package apiresp
 
 import (
-	"fmt"
 	"net/http"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type CommonError struct {
@@ -104,31 +101,9 @@ func UnknownError(err error) (int, Response[CommonError]) {
 	}
 }
 
-var inputErrorMessagesMap = map[string]string{
-	"required": "Field is required",
-	"email":    "Not a valid email",
-	"min":      "Value must contain at least %s characters",
-	"max":      "Value must be at most %s characters long",
-}
-
-func InputRequiredError(errors validator.ValidationErrors) (int, Response[InputError]) {
-	inputErrors := make([]InputError, len(errors))
-	for i, err := range errors {
-		errDescription, exists := inputErrorMessagesMap[err.Tag()]
-		if !exists {
-			errDescription = err.Error()
-		} else if err.Param() != "" {
-			errDescription = fmt.Sprintf(errDescription, err.Param())
-		}
-
-		inputErrors[i] = InputError{
-			Field:       err.Field(),
-			Description: errDescription,
-		}
-	}
-
+func InputRequiredError(errors []InputError) (int, Response[InputError]) {
 	return http.StatusBadRequest, Response[InputError]{
 		OK:     false,
-		Errors: inputErrors,
+		Errors: errors,
 	}
 }

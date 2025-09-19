@@ -25,7 +25,8 @@ func (ctl Controller) Register(fcx *fiber.Ctx) error {
 	if err := validateInput.Struct(reqBody); err != nil {
 		var validationErrors validator.ValidationErrors
 		if errors.As(err, &validationErrors) {
-			statusCode, resp := apiresp.InputRequiredError(validationErrors)
+			xValidationErrors := utils.XValidationErrors(validationErrors)
+			statusCode, resp := apiresp.InputRequiredError(xValidationErrors.ResolveInputErrors())
 			return fcx.Status(statusCode).JSON(resp)
 		}
 
