@@ -12,42 +12,58 @@ type userRepository struct {
 	tableName string
 }
 
-func NewUserRepository() (r userRepository) {
-	r.tableName = "users"
+func NewUserRepository() (rep userRepository) {
+	rep.tableName = "users"
 	return
 }
 
-func (r userRepository) List() ([]models.User, error) {
-	conn := db.MustGetConnection()
+func (rep userRepository) List() ([]models.User, error) {
+	con := db.MustGetConnection()
 
 	users := []models.User{}
-	if tx := conn.Find(&users); tx.Error != nil {
-		return nil, tx.Error
+	if trx := con.Find(&users); trx.Error != nil {
+		return nil, trx.Error
 	}
 
 	return users, nil
 }
 
-func (r userRepository) Get(userID int64) (*models.User, error) {
-	conn := db.MustGetConnection()
+func (rep userRepository) Get(userID int64) (*models.User, error) {
+	con := db.MustGetConnection()
 
-	user := models.User{}
-	if tx := conn.First(&user, userID); tx.Error != nil {
-		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+	var user models.User
+	if trx := con.First(&user, userID); trx.Error != nil {
+		if errors.Is(trx.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
-		return nil, tx.Error
+		return nil, trx.Error
 	}
 
 	return &user, nil
 }
 
-func (r userRepository) Create(newUser *models.User) error {
-	conn := db.MustGetConnection()
+func (rep userRepository) GetBy(filter map[string]any) (*models.User, error) {
+	con := db.MustGetConnection()
 
-	if tx := conn.Create(&newUser); tx.Error != nil {
-		return tx.Error
+	var user models.User
+	if trx := con.Where(filter).First(user); trx.Error != nil {
+		if errors.Is(trx.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, trx.Error
 	}
+
+	return &user, nil
+}
+
+func (rep userRepository) Create(newUser *models.User) error {
+	con := db.MustGetConnection()
+
+	trx := con.Create(&newUser)
+	if trx.Error != nil {
+		return trx.Error
+	}
+	newUser.ID = trx.RowsAffected
 
 	return nil
 }

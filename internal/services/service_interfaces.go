@@ -11,5 +11,5 @@ type CreateArticleService interface {
 }
 
 type RegisterService interface {
-	Execute() error
+	Execute(newUser *models.User) error
 }
