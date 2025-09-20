@@ -35,9 +35,10 @@ func (ctl Controller) RegisterHandler(fcx *fiber.Ctx) error {
 		return fcx.Status(statusCode).JSON(resp)
 	}
 
+	hashedPassword := utils.GeneratePassword(reqBody.Password)
 	newUser := models.User{
 		Email:    reqBody.Email,
-		Password: &reqBody.Password,
+		Password: &hashedPassword,
 	}
 	if err := ctl.RegisterService.Execute(&newUser); err != nil {
 		statusCode, resp := apiresp.FatalError()
