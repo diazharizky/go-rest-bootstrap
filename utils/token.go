@@ -1,8 +1,7 @@
 package utils
 
 import (
-	"os"
-
+	"github.com/diazharizky/go-rest-bootstrap/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -11,7 +10,7 @@ func GenerateToken(id uint) (string, error) {
 		"user_id": id,
 	})
 
-	appSecret := os.Getenv("APP_JWT_SECRET")
+	appSecret := config.Global.GetString("app.jwt_secret")
 	tokenStr, err := token.SignedString([]byte(appSecret))
 	if err != nil {
 		return "", err
@@ -21,7 +20,7 @@ func GenerateToken(id uint) (string, error) {
 }
 
 func VerifyToken(tokenStr string) (bool, error) {
-	appSecret := os.Getenv("APP_JWT_SECRET")
+	appSecret := config.Global.GetString("app.jwt_secret")
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (any, error) {
 		return []byte(appSecret), nil
 	})

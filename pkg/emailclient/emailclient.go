@@ -18,14 +18,6 @@ type client struct {
 	smtpAddr   string
 }
 
-func init() {
-	config.Global.SetDefault("emailclient.host", "localhost")
-	config.Global.SetDefault("emailclient.port", 1025)
-	config.Global.SetDefault("emailclient.sender_name", "gorest")
-	config.Global.SetDefault("emailclient.email", "gorest")
-	config.Global.SetDefault("emailclient.password", "")
-}
-
 func New() (cli client) {
 	cli.host = config.Global.GetString("emailclient.host")
 	cli.port = config.Global.GetInt32("emailclient.port")

@@ -8,14 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func init() {
-	config.Global.SetDefault("db.host", "localhost")
-	config.Global.SetDefault("db.port", 5432)
-	config.Global.SetDefault("db.user", "gorestbs")
-	config.Global.SetDefault("db.password", "gorestbs")
-	config.Global.SetDefault("db.name", "gorestbs")
-}
-
 func MustGetConnection() *gorm.DB {
 	host := config.Global.GetString("db.host")
 	port := config.Global.GetInt("db.port")
