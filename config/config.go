@@ -21,7 +21,7 @@ func init() {
 
 	configFileName := strings.ToLower(os.Getenv("CONFIG_FILE_NAME"))
 	if configFileName == "" {
-		configFileName = "default"
+		configFileName = "base"
 	}
 	Global.SetConfigName(configFileName)
 
