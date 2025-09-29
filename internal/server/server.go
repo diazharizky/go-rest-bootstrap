@@ -18,13 +18,6 @@ type server struct {
 	app *fiber.App
 }
 
-func init() {
-	config.Global.SetDefault("app.host", "localhost")
-	config.Global.SetDefault("app.port", 8080)
-	config.Global.SetDefault("app.throttling.max.requests", 20)
-	config.Global.SetDefault("app.throttling.expiration", 30)
-}
-
 func New() (svr server) {
 	app := fiber.New(fiber.Config{
 		CaseSensitive: true,
