@@ -11,7 +11,8 @@ func GenerateToken(id uint) (string, error) {
 		"user_id": id,
 	})
 
-	tokenStr, err := token.SignedString(os.Getenv("JWT_SECRET"))
+	appSecret := os.Getenv("APP_JWT_SECRET")
+	tokenStr, err := token.SignedString([]byte(appSecret))
 	if err != nil {
 		return "", err
 	}
@@ -20,8 +21,9 @@ func GenerateToken(id uint) (string, error) {
 }
 
 func VerifyToken(tokenStr string) (bool, error) {
+	appSecret := os.Getenv("APP_JWT_SECRET")
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (any, error) {
-		return []byte(os.Getenv("JWT_SECRET")), nil
+		return []byte(appSecret), nil
 	})
 	if err != nil {
 		return false, err

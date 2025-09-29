@@ -2,6 +2,7 @@ package authctl
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/diazharizky/go-rest-bootstrap/pkg/apiresp"
 	"github.com/diazharizky/go-rest-bootstrap/utils"
@@ -34,6 +35,31 @@ func (ctl Controller) LoginHandler(fcx *fiber.Ctx) error {
 		return fcx.Status(statusCode).JSON(resp)
 	}
 
-	statusCode, resp := apiresp.Ok(nil)
+	filter := map[string]any{"email": reqBody.Email}
+	user, err := ctl.UserRepository.GetBy(filter)
+	if err != nil {
+		statusCode, resp := apiresp.FatalError()
+		return fcx.Status(statusCode).JSON(resp)
+	}
+
+	if user == nil {
+		statusCode, resp := apiresp.NotFoundError()
+		return fcx.Status(statusCode).JSON(resp)
+	}
+
+	isMatched := utils.ComparePassword(*user.Password, reqBody.Password)
+	if !isMatched {
+		statusCode, resp := apiresp.CredentialsError()
+		return fcx.Status(statusCode).JSON(resp)
+	}
+
+	token, err := utils.GenerateToken(uint(user.ID))
+	if err != nil {
+		fmt.Println("Error:", err.Error())
+		statusCode, resp := apiresp.FatalError()
+		return fcx.Status(statusCode).JSON(resp)
+	}
+
+	statusCode, resp := apiresp.Ok(map[string]any{"token": token})
 	return fcx.Status(statusCode).JSON(resp)
 }

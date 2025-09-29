@@ -46,7 +46,7 @@ func (rep userRepository) GetBy(filter map[string]any) (*models.User, error) {
 	con := db.MustGetConnection()
 
 	var user models.User
-	if trx := con.Where(filter).First(user); trx.Error != nil {
+	if trx := con.Where(filter).First(&user); trx.Error != nil {
 		if errors.Is(trx.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}

@@ -83,7 +83,7 @@ func NotAuthenticatedError() (int, Response[CommonError]) {
 		Errors: []CommonError{
 			{
 				Code:        ErrCodeNotAuthenticated,
-				Description: "Not Authenticated",
+				Description: "Not authenticated",
 			},
 		},
 	}
@@ -105,5 +105,29 @@ func InputRequiredError(errors []InputError) (int, Response[InputError]) {
 	return http.StatusBadRequest, Response[InputError]{
 		OK:     false,
 		Errors: errors,
+	}
+}
+
+func NotFoundError() (int, Response[CommonError]) {
+	return http.StatusNotFound, Response[CommonError]{
+		OK: false,
+		Errors: []CommonError{
+			{
+				Code:        ErrCodeNotFound,
+				Description: "Not found",
+			},
+		},
+	}
+}
+
+func CredentialsError() (int, Response[CommonError]) {
+	return http.StatusUnauthorized, Response[CommonError]{
+		OK: false,
+		Errors: []CommonError{
+			{
+				Code:        ErrCodeInvalidCredentials,
+				Description: "Invalid credentials",
+			},
+		},
 	}
 }

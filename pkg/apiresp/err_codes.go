@@ -8,4 +8,6 @@ const (
 	ErrCodeUnauthorized
 	ErrCodeUnknown
 	ErrCodeNotAuthenticated
+	ErrCodeNotFound
+	ErrCodeInvalidCredentials
 )
