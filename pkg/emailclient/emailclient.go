@@ -1,10 +1,10 @@
 package emailclient
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"net/smtp"
-	"strings"
 
 	"github.com/diazharizky/go-rest-bootstrap/config"
 )
@@ -18,6 +18,10 @@ type client struct {
 	smtpAddr   string
 }
 
+type templateInterface interface {
+	RenderBody() (*bytes.Buffer, error)
+}
+
 func New() (cli client) {
 	cli.host = config.Global.GetString("emailclient.host")
 	cli.port = config.Global.GetInt32("emailclient.port")
@@ -29,26 +33,19 @@ func New() (cli client) {
 	return
 }
 
-func (cli client) generateBody(to []string, cc []string, subject, message string) string {
-	body := "From: " + cli.senderName + "\n" +
-		"To: " + strings.Join(to, ",") + "\n" +
-		"Cc: " + strings.Join(cc, ",") + "\n" +
-		"Subject: " + subject + "\n\n" +
-		message
-
-	return body
-}
-
-func (cli client) Send(to []string, cc []string, subject, message string) error {
+func (cli client) Send(to []string, cc []string, subject string, tpl templateInterface) error {
 	auth := smtp.PlainAuth("", cli.email, cli.password, cli.host)
-	body := cli.generateBody(to, cc, subject, message)
+	body, err := tpl.RenderBody()
+	if err != nil {
+		return err
+	}
 
 	return smtp.SendMail(
-		cli.smtpAddr, auth, cli.email, append(to, cc...), []byte(body),
+		cli.smtpAddr, auth, cli.email, append(to, cc...), body.Bytes(),
 	)
 }
 
-func (cli client) SendNoAuth(to []string, cc []string, subject, message string) error {
+func (cli client) SendNoAuth(to []string, cc []string, subject string, tpl templateInterface) error {
 	cl, err := smtp.Dial(cli.smtpAddr)
 	if cl != nil {
 		defer cl.Quit()
@@ -74,8 +71,12 @@ func (cli client) SendNoAuth(to []string, cc []string, subject, message string) 
 		return err
 	}
 
-	body := cli.generateBody(to, cc, subject, message)
-	if _, err = w.Write([]byte(body)); err != nil {
+	body, err := tpl.RenderBody()
+	if err != nil {
+		return err
+	}
+
+	if _, err = w.Write(body.Bytes()); err != nil {
 		return err
 	}
 
